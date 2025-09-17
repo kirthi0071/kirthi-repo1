@@ -1,7 +1,4 @@
-# cloudbuild.yaml - Student Form App Deployment to Cloud Run
-
 steps:
-  # Step 1: Build Docker Image with commit SHA tag
   - name: 'gcr.io/cloud-builders/docker'
     id: Build
     args:
@@ -11,9 +8,7 @@ steps:
         'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA',
         '.'
       ]
-    waitFor: ["-"]
 
-  # Step 2: Push Docker Image with commit SHA tag
   - name: 'gcr.io/cloud-builders/docker'
     id: Push
     args:
@@ -21,30 +16,7 @@ steps:
         'push',
         'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA'
       ]
-    waitFor: ["Build"]
 
-  # Step 3: Tag image as latest
-  - name: 'gcr.io/cloud-builders/docker'
-    id: TagLatest
-    args:
-      [
-        'tag',
-        'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA',
-        'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:latest'
-      ]
-    waitFor: ["Push"]
-
-  # Step 4: Push Docker Image with latest tag
-  - name: 'gcr.io/cloud-builders/docker'
-    id: PushLatest
-    args:
-      [
-        'push',
-        'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:latest'
-      ]
-    waitFor: ["TagLatest"]
-
-  # Step 5: Deploy to Cloud Run using commit SHA image
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: Deploy
     entrypoint: gcloud
@@ -56,13 +28,9 @@ steps:
         '--platform', 'managed',
         '--allow-unauthenticated'
       ]
-    waitFor: ["PushLatest"]
 
-# Track both images in Cloud Build
 images:
   - 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA'
-  - 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:latest'
 
-# Logging configuration
 options:
   logging: CLOUD_LOGGING_ONLY
