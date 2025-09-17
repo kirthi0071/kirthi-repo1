@@ -1,4 +1,10 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-app.get("/", (req, res) => res.send("Hello from Service 1 (Port 80)!"));
-app.listen(80, () => console.log("Service 1 running on port 80"));
+
+app.get('/', (req, res) => {
+  res.send('Hello from App1!');
+});
+
+app.listen(5001, () => {
+  console.log('App1 running on port 5001');
+});
