@@ -2,10 +2,13 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send("Hello from App1!");
+  res.send("Hello from App1 root!");
 });
 
-// ✅ Must listen on 0.0.0.0 so Cloud Run/NGINX can reach it
+app.get("/app1", (req, res) => {
+  res.send("Hello from App1 /app1 route!");
+});
+
 app.listen(5001, "0.0.0.0", () => {
   console.log("App1 running on port 5001");
 });
