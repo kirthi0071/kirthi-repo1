@@ -1,11 +1,29 @@
 steps:
+  # Step 1: Build Docker Image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA', '.']
+    id: Build
+    args:
+      [
+        'build',
+        '-t',
+        'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA',
+        '.'
+      ]
+    waitFor: ["-"]
 
+  # Step 2: Push Docker Image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA']
+    id: Push
+    args:
+      [
+        'push',
+        'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA'
+      ]
+    waitFor: ["Build"]
 
+  # Step 3: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: Deploy
     entrypoint: gcloud
     args:
       [
@@ -15,10 +33,11 @@ steps:
         '--platform', 'managed',
         '--allow-unauthenticated'
       ]
+    waitFor: ["Push"]
 
 images:
-  - 'REGION-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA'
-  - 'REGION-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:latest'
+  - 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
