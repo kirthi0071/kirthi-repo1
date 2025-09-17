@@ -10,7 +10,7 @@ html_form = """
 <form method="post">
   Name: <input type="text" name="name" required><br><br>
   Age: <input type="number" name="age" required><br><br>
-  Course: <input type="text" name="course" required><br><br>
+  Courses: <input type="text" name="course" required><br><br>
   <input type="submit" value="Submit">
 </form>
 
