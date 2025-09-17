@@ -1,18 +1,28 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim
+# Base Node.js image
+FROM node:18-slim
 
-# Set working directory
-WORKDIR /app
+# Install NGINX
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy apps
+WORKDIR /usr/src/app
+COPY app1 ./app1
+COPY app2 ./app2
 
-# Copy application code
-COPY . .
+# Install dependencies
+WORKDIR /usr/src/app/app1
+RUN npm install express
 
-# Expose port 8080 (required by Cloud Run)
+WORKDIR /usr/src/app/app2
+RUN npm install express
+
+# Copy NGINX config
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# Start all processes: app1, app2, nginx
+CMD node /usr/src/app/app1/server.js & \
+    node /usr/src/app/app2/server.js & \
+    nginx -g 'daemon off;'
+
+# Cloud Run will expose port 8080
 EXPOSE 8080
-
-# Run the app with gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]

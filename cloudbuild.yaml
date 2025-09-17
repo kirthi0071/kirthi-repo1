@@ -1,24 +1,14 @@
 steps:
+  # Build
   - name: 'gcr.io/cloud-builders/docker'
-    id: Build
-    args:
-      [
-        'build',
-        '-t',
-        'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA',
-        '.'
-      ]
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA', '.']
 
+  # Push
   - name: 'gcr.io/cloud-builders/docker'
-    id: Push
-    args:
-      [
-        'push',
-        'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA'
-      ]
+    args: ['push', 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA']
 
+  # Deploy
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: Deploy
     entrypoint: gcloud
     args:
       [
@@ -26,7 +16,8 @@ steps:
         '--image', 'us-central1-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA',
         '--region', 'us-central1',
         '--platform', 'managed',
-        '--allow-unauthenticated'
+        '--allow-unauthenticated',
+        '--port', '8080'
       ]
 
 images:
