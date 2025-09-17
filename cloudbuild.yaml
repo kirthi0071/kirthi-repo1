@@ -19,3 +19,6 @@ steps:
 images:
   - 'REGION-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:$COMMIT_SHA'
   - 'REGION-docker.pkg.dev/divine-course-470809-f6/student-form-repo/student-form-app:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
