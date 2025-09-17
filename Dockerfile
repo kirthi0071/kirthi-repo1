@@ -9,21 +9,19 @@ WORKDIR /usr/src/app
 COPY app1 ./app1
 COPY app2 ./app2
 
-# Install dependencies for app1
+# Install dependencies
 WORKDIR /usr/src/app/app1
-RUN npm install
-
-# Install dependencies for app2
+RUN npm install express
 WORKDIR /usr/src/app/app2
-RUN npm install
+RUN npm install express
 
 # Copy NGINX config
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Expose Cloud Run port
-EXPOSE 8080
-
-# Start app1 (5001), app2 (5002), then Nginx (8080)
+# Start all processes: app1, app2, nginx
 CMD node /usr/src/app/app1/server.js & \
     node /usr/src/app/app2/server.js & \
     nginx -g 'daemon off;'
+
+# Cloud Run exposes port 8080
+EXPOSE 8080
